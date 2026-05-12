@@ -9,7 +9,7 @@ WORKDIR /workspace
 # 캐시 활용 — build 설정 파일 먼저 복사해서 의존성 fetch
 COPY settings.gradle build.gradle ./
 COPY gradle ./gradle
-RUN gradle dependencies --no-daemon || true
+RUN gradle dependencies --no-daemon
 
 COPY src ./src
 
