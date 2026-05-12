@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: config-server
+  labels:
+    app: config-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: config-server
+  template:
+    metadata:
+      labels:
+        app: config-server
+    spec:
+      # Pod-level: 비-root 강제 + UID/GID 1000 (Dockerfile 의 spring 유저와 일치)
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: config-server
+          image: asia-northeast3-docker.pkg.dev/trusta-market-id/trusta-registry-services/config-server:PLACEHOLDER
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          ports:
+            - containerPort: 8888
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "k8s"
+            # config-repo 가 private 이라 git clone 시 PAT 인증 필요.
+            # Secret 'config-server-git' 을 미리 만들어 두어야 Pod 가 떠짐.
+            - name: GIT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: config-server-git
+                  key: username
+            - name: GIT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: config-server-git
+                  key: token
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          # startupProbe — git clone + Spring 부트 시간 변동 고려. 5s × 30 = 150s 까지 대기.
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8888
+            failureThreshold: 30
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8888
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8888
+            periodSeconds: 5
