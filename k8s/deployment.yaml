@@ -46,11 +46,11 @@ spec:
                   key: token
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 700m
+              memory: 2Gi
             limits:
-              cpu: 500m
-              memory: 512Mi
+              cpu: 1000m
+              memory: 2500Mi
           # startupProbe — git clone + Spring 부트 시간 변동 고려. 5s × 30 = 150s 까지 대기.
           startupProbe:
             httpGet:
