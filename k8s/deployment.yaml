@@ -44,7 +44,7 @@ spec:
             - containerPort: 8888
           env:
             - name: SPRING_PROFILES_ACTIVE
-              value: "k8s"
+              value: "dev"
             # config-repo 가 private 이라 git clone 시 PAT 인증 필요.
             # Secret 'config-server-git' 을 미리 만들어 두어야 Pod 가 떠짐.
             - name: GIT_USERNAME

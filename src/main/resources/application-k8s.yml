@@ -1,6 +1,0 @@
-# K8s 환경 전용 override (SPRING_PROFILES_ACTIVE=k8s 일 때만 로드).
-# config-server 는 Eureka client 가 아니라서 service discovery override 가 없음.
-# git backend (config-repo) URI 와 인증은 application.yml 의 ${GIT_USERNAME}/${GIT_TOKEN}
-# 환경변수로 그대로 가져옴 (K8s Deployment 의 env 가 Secret 에서 주입).
-#
-# 향후 K8s 전용 override 필요해지면 (예: 로깅 레벨, JMX, 별도 git URL) 여기에 추가.
